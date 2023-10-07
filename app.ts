@@ -14,6 +14,7 @@ app.use(express.json());
 
 // Models
 const User = require("./models/User");
+const Projeto = require("./models/User")
 
 // rota publica
 app.get("/", (req: Request, res: Response) => {
@@ -141,6 +142,80 @@ app.post("/auth/login", async (req: Request, res: Response) => {
       .json({ msg: "Erro no servidor, tente novamente mais tarde!" });
   }
 });
+
+// Adicioanr Projeto
+app.post("/projetos", async(req: Request, res: Response) => {
+  const { nome } = req.body;
+
+    //validations
+    if (!nome) {
+      return res.status(422).json({ msg: "O nome é obrigatório!" });
+    }
+
+   // create projeto
+   const projeto = new Projeto({
+    nome
+  });
+
+  try {
+    await projeto.save();
+    res.status(201).json({ msg: "Projeto criado com sucesso!" });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ msg: "Erro no servidor, tente novamente mais tarde!" });
+  }
+})
+
+// Listar Projeto
+app.get("/projetos/list", async(req: Request, res: Response) => {
+  try {
+    const projetos = await Projeto.find()
+
+    res.json(projetos);
+  } catch (error) {
+    res.status(500).json({ erro: 'Ocorreu um erro ao listar os documentos' });
+  }
+});
+
+// Excluir Projeto
+app.delete("/projetos/:id", async(req: Request, res: Response) => {
+  try {
+    const id = req.params.id
+
+    const projeto = await Projeto.findById(id)
+
+    if(!projeto){
+      return res.status(404).json({msg: "Projeto não encontrado!"})
+    }
+
+    const deletedProjeto = await Projeto.findByIdAndDelete(id)
+
+    res.status(200).json({deletedProjeto, msg: "Projeto deletado com sucesso!"})
+    
+  } catch (error) {
+    
+  }
+})
+
+// Editar Projeto
+app.put("/projetos/:id", async(req: Request, res: Response) => {
+  const id = req.params.id
+  const { nome } = req.body;
+
+  const projeto = {
+    nome: req.body.nome,
+    tempoGasto: req.body.tempoGasto
+  }
+
+  const updatedProjeto = await Projeto.findByIdAndUpdate(id, projeto)
+  
+  if(!updatedProjeto){
+    return res.status(404).json({msg: "Projeto não encontrado!"})
+  }
+
+  res.status(200).json({projeto, msg:"Projeto atualizado com sucesso"})
+})
 
 // Rotes
 

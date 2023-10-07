@@ -7,3 +7,13 @@ const User = mongoose.model('User', {
 })
 
 module.exports = User
+
+const Projeto = mongoose.model('Projeto', {
+    nome: String,
+    tempoGasto: [{
+        data: Date,
+        tempo: Number
+    }]
+})
+ 
+module.exports = Projeto
