@@ -1,6 +1,7 @@
 /* Imports */
 
 import { Request, Response, NextFunction } from "express";
+import {Registro} from "./models/Registro"
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -129,6 +130,11 @@ app.post("/auth/login", async (req: Request, res: Response) => {
   }
 
   try {
+
+    const name = user.name
+
+    const id = user.id
+
     const secret = process.env.SECRET;
 
     const token = jwt.sign(
@@ -138,7 +144,7 @@ app.post("/auth/login", async (req: Request, res: Response) => {
       secret
     );
 
-    res.status(200).json({ msg: "Login realizado com sucesso", token });
+    res.status(200).json({ msg: "Login realizado com sucesso", token, name, id });
   } catch (error) {
     res
       .status(500)
@@ -148,7 +154,7 @@ app.post("/auth/login", async (req: Request, res: Response) => {
 
 // Adicioanr Projeto
 app.post("/projetos", async(req: Request, res: Response) => {
-  const { nome } = req.body;
+  const { nome, userId } = req.body;
 
     //validations
     if (!nome) {
@@ -157,7 +163,8 @@ app.post("/projetos", async(req: Request, res: Response) => {
 
    // create projeto
    const projeto = new Projeto({
-    nome
+    nome, 
+    userId
   });
 
   try {
@@ -173,13 +180,78 @@ app.post("/projetos", async(req: Request, res: Response) => {
 // Listar Projeto
 app.get("/projetos/list", async(req: Request, res: Response) => {
   try {
-    const projetos = await Projeto.find()
+    const userId = req.query.userId;
+
+    if (!userId) {
+      return res.status(400).json({ erro: 'É necessário fornecer um userId na solicitação.' });
+    }
+
+    const projetos = await Projeto.find({ userId: userId });
+
+    if (projetos.length === 0) {
+      return res.status(404).json({ erro: 'Nenhum projeto encontrado para o userId especificado.' });
+    }
 
     res.json(projetos);
   } catch (error) {
     res.status(500).json({ erro: 'Ocorreu um erro ao listar os documentos' });
   }
 });
+
+app.get("/projetos/list/dados",async (req: Request, res: Response) => {
+  try {
+
+    const userId = req.query.userId;
+
+    if (!userId) {
+      return res.status(400).json({ erro: 'É necessário fornecer um userId na solicitação.' });
+    }
+
+    const dataFormatada = new Date().toLocaleDateString('pt-BR')
+
+
+    //PEGA TODO O TEMPO APONTADO HOJE E TODO TEMPO APOSTANDO HOJE POR PROJETO
+    const projetosDia = await Projeto.find({ "tempoGasto.data": dataFormatada })
+
+    let tempoHoje:number = 0
+    const tempoHojeProjeto = []
+
+    for (let i = 0; i < projetosDia.length; i++) {
+      const projeto = projetosDia[i];
+      const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
+      tempoHojeProjeto.push({
+        id: projeto._id,
+        tempoHoje: tempoTotal
+      })
+      tempoHoje += tempoTotal
+    }
+    //FIM
+
+    //PEGA TODO O TEMPO APONTADO NO MÊS
+    const projetosMês = await Projeto.find({ "tempoGasto.data": { $regex: `${dataFormatada.slice(3, 10)}.*` }})
+
+    let tempoMes:number = 0
+
+    for (let i = 0; i < projetosMês.length; i++) {
+      const projeto = projetosMês[i];
+      const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
+      tempoMes += tempoTotal
+    }
+    
+
+
+    const response = {
+      projetosDia: projetosDia,
+      tempoMes: tempoMes,
+      tempoHojeProjeto: tempoHojeProjeto,
+      tempoHoje: tempoHoje
+    }
+
+    res.json(response);
+  } catch (error) {
+    res.status(500).json({ erro: 'Ocorreu um erro ao listar os documentos' });
+  }
+})
 
 // Excluir Projeto
 app.delete("/projetos/:id", async(req: Request, res: Response) => {
