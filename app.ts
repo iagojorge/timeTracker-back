@@ -6,15 +6,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const cors = require('cors');
 
 const app = express();
 
 // Config Json response
+app.use(cors({ origin: 'http://localhost:8080' }));
 app.use(express.json());
 
 // Models
+const Projeto = require("./models/Projeto")
 const User = require("./models/User");
-const Projeto = require("./models/User")
+
 
 // rota publica
 app.get("/", (req: Request, res: Response) => {

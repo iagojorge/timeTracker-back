@@ -1,19 +1,11 @@
-const mongoose = require('mongoose')
+const Umongoose = require('./mongoose')
 
-const User = mongoose.model('User', {
+const User = Umongoose.model('User', new Umongoose.Schema({
     name: String,
     email: String,
-    password: String,
-})
+    password: String
+  }, {
+    collection: 'users'
+  }));
 
 module.exports = User
-
-const Projeto = mongoose.model('Projeto', {
-    nome: String,
-    tempoGasto: [{
-        data: Date,
-        tempo: Number
-    }]
-})
- 
-module.exports = Projeto
