@@ -198,7 +198,7 @@ app.get("/projetos/list", async(req: Request, res: Response) => {
   }
 });
 
-app.get("/projetos/list/dados",async (req: Request, res: Response) => {
+app.get("/dashboard/list",async (req: Request, res: Response) => {
   try {
 
     const userId = req.query.userId;
@@ -211,24 +211,33 @@ app.get("/projetos/list/dados",async (req: Request, res: Response) => {
 
 
     //PEGA TODO O TEMPO APONTADO HOJE E TODO TEMPO APOSTANDO HOJE POR PROJETO
-    const projetosDia = await Projeto.find({ "tempoGasto.data": dataFormatada })
+    const projetosDia = await Projeto.find({ 
+      $and: [
+        { "tempoGasto.data": dataFormatada },
+        { userId: userId }
+      ]
+    })
 
-    let tempoHoje:number = 0
-    const tempoHojeProjeto = []
-
-    for (let i = 0; i < projetosDia.length; i++) {
-      const projeto = projetosDia[i];
-      const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
-      tempoHojeProjeto.push({
-        id: projeto._id,
-        tempoHoje: tempoTotal
-      })
-      tempoHoje += tempoTotal
-    }
-    //FIM
+      let tempoHoje:number = 0
+      const tempoHojeProjeto = []
+  
+      for (let i = 0; i < projetosDia.length; i++) {
+        const projeto = projetosDia[i];
+        const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
+        tempoHojeProjeto.push({
+          id: projeto._id,
+          tempoHoje: tempoTotal
+        })
+        tempoHoje += tempoTotal
+      }
 
     //PEGA TODO O TEMPO APONTADO NO MÊS
-    const projetosMês = await Projeto.find({ "tempoGasto.data": { $regex: `${dataFormatada.slice(3, 10)}.*` }})
+    const projetosMês = await Projeto.find({
+      $and: [
+        { "tempoGasto.data": { $regex: `${dataFormatada.slice(3, 10)}.*` }},
+        { userId: userId }
+      ]
+    })
 
     let tempoMes:number = 0
 
@@ -237,14 +246,43 @@ app.get("/projetos/list/dados",async (req: Request, res: Response) => {
       const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
       tempoMes += tempoTotal
     }
+
+    //PEGA TODO O TEMPO APONSTADO NA SEMANA
+    const datahoje = new Date()
+    let tempoSemana:number = 0
+    const semanaTempo = []
+    const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+
+    // Loop que diminui o dia em 7 dias
+    for (let i = 0; i < 7; i++) {
+      datahoje.setDate(datahoje.getDate() - 1);
+      const dataFind = new Date(datahoje).toLocaleDateString('pt-BR')
+      const projetosDia = await Projeto.find({
+        $and: [
+          { "tempoGasto.data": dataFind },
+          { userId: userId }
+        ]
+      })
+
+      for (let i = 0; i < projetosDia.length; i++) {
+        const projeto = projetosDia[i];
+        const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
+        semanaTempo.push({
+          nome: diasDaSemana[datahoje.getDay()],
+          tempoHoje: tempoTotal
+        })
+        tempoSemana += tempoTotal
+      }
+
+    }
     
-
-
     const response = {
-      projetosDia: projetosDia,
-      tempoMes: tempoMes,
-      tempoHojeProjeto: tempoHojeProjeto,
-      tempoHoje: tempoHoje
+      semanaTempo,
+      tempoSemana: new Date(tempoSemana * 1000).toISOString().substr(11, 8),
+      projetosDia,
+      tempoMes: new Date(tempoMes * 1000).toISOString().substr(11, 8),
+      tempoHojeProjeto,
+      tempoHoje: new Date(tempoHoje * 1000).toISOString().substr(11, 8),
     }
 
     res.json(response);
