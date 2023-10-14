@@ -54,7 +54,7 @@ export const register = async (req: Request, res: Response) => {
         .status(500)
         .json({ msg: "Erro no servidor, tente novamente mais tarde!" });
     }
-  };
+};
 
 export const login = async (req: Request, res: Response) =>{
     const { email, password } = req.body;
@@ -100,3 +100,19 @@ export const login = async (req: Request, res: Response) =>{
         .json({ msg: "Erro no servidor, tente novamente mais tarde!" });
     }
 };
+
+export const publica = async (req: Request, res: Response) =>{
+    res.status(200).send({ msg: "bem vindo" });
+}
+
+export const privada = async (req: Request, res: Response) =>{
+    const id = req.params.id;
+
+    const user = await User.findById(id, "-password");
+  
+    if (!user) {
+      return res.status(404).json({ msg: "Usuário não existe!" });
+    }
+  
+    res.status(200).json({ user });
+}
