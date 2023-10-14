@@ -28,7 +28,7 @@ Siga as etapas abaixo para configurar o projeto:
 
 ## Uso
 
-Para iniciar o servidor, utilize o seguinte comando:
+Para iniciar o servidor, utilize o seguinte comando: `npm start serve`
 
 O servidor estará disponível em [http://localhost:3000].
 
