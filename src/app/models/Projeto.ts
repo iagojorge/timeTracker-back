@@ -1,6 +1,6 @@
-const Pmongoose = require('./mongoose')
+import mongoose from "mongoose";
 
-const Projeto = Pmongoose.model('Projeto', new Pmongoose.Schema({
+export const Projeto = mongoose.model('Projeto', new mongoose.Schema({
     nome: String,
     tempoGasto: [{
         data: String,
@@ -11,4 +11,3 @@ const Projeto = Pmongoose.model('Projeto', new Pmongoose.Schema({
     collection: 'projetos'
   }));
  
-module.exports = Projeto

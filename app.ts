@@ -1,13 +1,18 @@
 /* Imports */
-
+import express from "express";
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import cors from 'cors';
 import { Request, Response, NextFunction } from "express";
-import {Registro} from "./models/Registro"
-require("dotenv").config();
-const express = require("express");
-const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const cors = require('cors');
+import * as dotenv from "dotenv"
+
+
+// Models
+import  { Projeto }  from "./src/app/models/Projeto";
+import { User } from "./src/app/models/User";
+import { ProjetoDash } from "./src/app/interface/Projeto.interface";
+
 
 const app = express();
 
@@ -15,9 +20,11 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:8080' }));
 app.use(express.json());
 
-// Models
-const Projeto = require("./models/Projeto")
-const User = require("./models/User");
+//Credenciais
+dotenv.config()
+const dbUser = process.env.DB_USER || '';
+const dbPass = process.env.DB_PASS || '';
+const secret = process.env.SECRET || '';
 
 
 // rota publica
@@ -38,6 +45,7 @@ app.get("/user/:id", checkToken, async (req: Request, res: Response) => {
   res.status(200).json({ user });
 });
 
+// valida o token do usuario
 function checkToken(req: Request, res: Response, next: NextFunction) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
@@ -47,7 +55,6 @@ function checkToken(req: Request, res: Response, next: NextFunction) {
   }
 
   try {
-    const secret = process.env.SECRET;
     jwt.verify(token, secret);
 
     next();
@@ -123,7 +130,7 @@ app.post("/auth/login", async (req: Request, res: Response) => {
   }
 
   // check passwrod
-  const checkPassword = await bcrypt.compare(password, user.password);
+  const checkPassword =  bcrypt.compare(password, user.password!);
 
   if (!checkPassword) {
     return res.status(422).json({ msg: "Senha inválida!" });
@@ -134,8 +141,6 @@ app.post("/auth/login", async (req: Request, res: Response) => {
     const name = user.name
 
     const id = user.id
-
-    const secret = process.env.SECRET;
 
     const token = jwt.sign(
       {
@@ -198,6 +203,7 @@ app.get("/projetos/list", async(req: Request, res: Response) => {
   }
 });
 
+// Dados da dashboard
 app.get("/dashboard/list",async (req: Request, res: Response) => {
   try {
 
@@ -208,6 +214,7 @@ app.get("/dashboard/list",async (req: Request, res: Response) => {
     }
 
     const dataFormatada = new Date().toLocaleDateString('pt-BR')
+    const datahoje = new Date()
 
 
     //PEGA TODO O TEMPO APONTADO HOJE E TODO TEMPO APOSTANDO HOJE POR PROJETO
@@ -219,17 +226,14 @@ app.get("/dashboard/list",async (req: Request, res: Response) => {
     })
 
       let tempoHoje:number = 0
-      const tempoHojeProjeto = []
-  
-      for (let i = 0; i < projetosDia.length; i++) {
-        const projeto = projetosDia[i];
-        const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
-        tempoHojeProjeto.push({
-          id: projeto._id,
-          tempoHoje: tempoTotal
+
+      projetosDia.forEach(projeto => {
+        projeto.tempoGasto.forEach(tempoGasto =>{
+          if(tempoGasto.data == dataFormatada && tempoGasto.tempo){
+            tempoHoje += tempoGasto.tempo
+          }
         })
-        tempoHoje += tempoTotal
-      }
+      })
 
     //PEGA TODO O TEMPO APONTADO NO MÊS
     const projetosMês = await Projeto.find({
@@ -241,20 +245,22 @@ app.get("/dashboard/list",async (req: Request, res: Response) => {
 
     let tempoMes:number = 0
 
-    for (let i = 0; i < projetosMês.length; i++) {
-      const projeto = projetosMês[i];
-      const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
-      tempoMes += tempoTotal
-    }
+    projetosMês.forEach(projeto => {
+     projeto.tempoGasto.forEach(tempoGasto =>{
+      if(tempoGasto.tempo){
+        tempoMes += tempoGasto.tempo
+      }
+     })
+    })
+
 
     //PEGA TODO O TEMPO APONSTADO NA SEMANA
-    const datahoje = new Date()
     let tempoSemana:number = 0
     const semanaTempo = []
     const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
+    let tempoHojeSemana:number = 0
 
-    // Loop que diminui o dia em 7 dias
-    for (let i = 0; i < 7; i++) {
+    for (const dia of diasDaSemana){
       datahoje.setDate(datahoje.getDate() - 1);
       const dataFind = new Date(datahoje).toLocaleDateString('pt-BR')
       const projetosDia = await Projeto.find({
@@ -264,24 +270,45 @@ app.get("/dashboard/list",async (req: Request, res: Response) => {
         ]
       })
 
-      for (let i = 0; i < projetosDia.length; i++) {
-        const projeto = projetosDia[i];
-        const tempoTotal = projeto.tempoGasto.reduce((total:number, registro: Registro) => total + registro.tempo, 0);
-        semanaTempo.push({
-          nome: diasDaSemana[datahoje.getDay()],
-          tempoHoje: tempoTotal
-        })
-        tempoSemana += tempoTotal
-      }
+      projetosDia.forEach(projeto => {
+        projeto.tempoGasto.forEach(tempoGasto => {
+          if(tempoGasto.data == dataFind && tempoGasto.tempo){
+            tempoHojeSemana += tempoGasto.tempo
+          }
+        });
+      })
 
+      semanaTempo.push({
+        nome: diasDaSemana[datahoje.getDay()],
+        tempoHojeSemana: tempoHojeSemana
+      })
+   
+      tempoSemana += tempoHojeSemana
+      tempoHojeSemana = 0
     }
     
+    ///PEGA O TEMPOTOTAL DE CADA PROJETO
+    const projetosTotal = await Projeto.find({ userId: userId })
+    let tempoProjeto:number = 0
+    const projetoTempo: ProjetoDash[] = []
+
+    projetosTotal.forEach(projeto => {
+      projeto.tempoGasto.forEach(tempoGasto => {
+        if(tempoGasto.tempo){
+          tempoProjeto += tempoGasto.tempo
+        }
+      })
+      if(projeto.nome){
+        projetoTempo.push({ nome: projeto.nome, tempo: tempoProjeto})
+      }
+      tempoProjeto = 0
+    })
+    
     const response = {
+      projetoTempo,
       semanaTempo,
       tempoSemana: new Date(tempoSemana * 1000).toISOString().substr(11, 8),
-      projetosDia,
       tempoMes: new Date(tempoMes * 1000).toISOString().substr(11, 8),
-      tempoHojeProjeto,
       tempoHoje: new Date(tempoHoje * 1000).toISOString().substr(11, 8),
     }
 
@@ -332,10 +359,6 @@ app.put("/projetos/:id", async(req: Request, res: Response) => {
 
 // Rotes
 
-
-//Credenciais
-const dbUser = process.env.DB_USER;
-const dbPass = process.env.DB_PASS;
 
 mongoose
   .connect(
