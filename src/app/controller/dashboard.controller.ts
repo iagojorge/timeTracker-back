@@ -56,7 +56,7 @@ export const dashboard = async (req: Request, res: Response) => {
         let tempoSemana:number = 0
         const semanaTempo = []
         const diasDaSemana = ['Domingo', 'Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado'];
-        let tempoHojeSemana:number = 0
+        let tempo:number = 0
     
         for (const dia of diasDaSemana){
           datahoje.setDate(datahoje.getDate() - 1);
@@ -71,18 +71,18 @@ export const dashboard = async (req: Request, res: Response) => {
           projetosDia.forEach(projeto => {
             projeto.tempoGasto.forEach(tempoGasto => {
               if(tempoGasto.data == dataFind && tempoGasto.tempo){
-                tempoHojeSemana += tempoGasto.tempo
+                tempo += tempoGasto.tempo
               }
             });
           })
     
           semanaTempo.push({
             nome: diasDaSemana[datahoje.getDay()],
-            tempoHojeSemana: tempoHojeSemana
+            tempo: tempo
           })
        
-          tempoSemana += tempoHojeSemana
-          tempoHojeSemana = 0
+          tempoSemana += tempo
+          tempo = 0
         }
         
         ///PEGA O TEMPOTOTAL DE CADA PROJETO
