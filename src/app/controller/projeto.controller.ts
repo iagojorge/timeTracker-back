@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import  { Projeto }  from "../models/Projeto";
+import { ProjetoDash } from "../interface/Projeto.interface";
 
 
 export const adicionar = async (req: Request, res: Response) => {
@@ -51,13 +52,34 @@ export const listar = async (req: Request, res: Response) => {
             return res.status(400).json({ erro: 'É necessário fornecer um userId na solicitação.' });
         }
 
-        const projetos = await Projeto.find({ userId: userId });
+        ///PEGA O TEMPOTOTAL DE CADA PROJETO
+        const projetos = await Projeto.find({ userId: userId })
+        let tempoProjeto:number = 0
+        let tempoHojeP:number = 0;
+        const dataFormatada = new Date().toLocaleDateString('pt-BR')
+        const projetoTempo: ProjetoDash[] = []
+    
+        projetos.forEach(projeto => {
+          projeto.tempoGasto.forEach(tempoGasto => {
+            if(tempoGasto.tempo){
+              if(tempoGasto.data == dataFormatada){
+                tempoHojeP += tempoGasto.tempo
+              }
+              tempoProjeto += tempoGasto.tempo
+            }
+          })
+          if(projeto.nome){
+            projetoTempo.push({ nome: projeto.nome, tempo: tempoProjeto, tempoHoje: tempoHojeP, _id: projeto.id})
+          }
+          tempoProjeto = 0
+          tempoHojeP = 0
+        })
 
         if (projetos.length === 0) {
             return res.status(404).json({ erro: 'Nenhum projeto encontrado para o userId especificado.' });
         }
 
-        res.json(projetos);
+        res.json(projetoTempo);
         } catch (error) {
         res.status(500).json({ erro: 'Ocorreu um erro ao listar os documentos' });
         }

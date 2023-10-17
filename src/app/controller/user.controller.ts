@@ -74,8 +74,8 @@ export const login = async (req: Request, res: Response) =>{
     }
   
     // check passwrod
-    const checkPassword =  bcrypt.compare(password, user.password!);
-  
+    const checkPassword =  await bcrypt.compare(password, user.password!);
+
     if (!checkPassword) {
       return res.status(422).json({ msg: "Senha inválida!" });
     }

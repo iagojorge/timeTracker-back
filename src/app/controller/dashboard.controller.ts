@@ -84,26 +84,8 @@ export const dashboard = async (req: Request, res: Response) => {
           tempoSemana += tempo
           tempo = 0
         }
-        
-        ///PEGA O TEMPOTOTAL DE CADA PROJETO
-        const projetosTotal = await Projeto.find({ userId: userId })
-        let tempoProjeto:number = 0
-        const projetoTempo: ProjetoDash[] = []
-    
-        projetosTotal.forEach(projeto => {
-          projeto.tempoGasto.forEach(tempoGasto => {
-            if(tempoGasto.tempo){
-              tempoProjeto += tempoGasto.tempo
-            }
-          })
-          if(projeto.nome){
-            projetoTempo.push({ nome: projeto.nome, tempo: tempoProjeto})
-          }
-          tempoProjeto = 0
-        })
-        
+          
         const response = {
-          projetoTempo,
           semanaTempo,
           tempoSemana: new Date(tempoSemana * 1000).toISOString().substr(11, 8),
           tempoMes: new Date(tempoMes * 1000).toISOString().substr(11, 8),
