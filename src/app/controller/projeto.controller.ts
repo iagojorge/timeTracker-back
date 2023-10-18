@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import  { Projeto }  from "../models/Projeto";
 import { ProjetoDash } from "../interface/Projeto.interface";
+import { Filtro } from "../interface/Filtro.interface";
 
 
 export const adicionar = async (req: Request, res: Response) => {
@@ -29,10 +30,14 @@ export const adicionar = async (req: Request, res: Response) => {
 
 export const editar = async (req: Request, res: Response) => {
     const id = req.params.id
-  
+
+    const projetoTempo = await Projeto.findById(id)
+    
+    projetoTempo?.tempoGasto.push(req.body.tempoGasto)
+
     const projeto = {
       nome: req.body.nome,
-      tempoGasto: req.body.tempoGasto
+      tempoGasto: projetoTempo?.tempoGasto
     }
   
     const updatedProjeto = await Projeto.findByIdAndUpdate(id, projeto)
@@ -47,13 +52,21 @@ export const editar = async (req: Request, res: Response) => {
 export const listar = async (req: Request, res: Response) => {
     try {
         const userId = req.query.userId;
+        const filtro = req.query.filtro;
+
+        let projetos: Filtro[] = [];
 
         if (!userId) {
             return res.status(400).json({ erro: 'É necessário fornecer um userId na solicitação.' });
         }
-
-        ///PEGA O TEMPOTOTAL DE CADA PROJETO
-        const projetos = await Projeto.find({ userId: userId })
+        
+        if(filtro){
+          const filtroString = typeof filtro === 'string' ? filtro : filtro.toString();
+           projetos = await Projeto.find({ userId: userId, nome: { $regex: new RegExp(filtroString, 'i') } })
+        }else{
+           projetos = await Projeto.find({ userId: userId})
+        }
+      
         let tempoProjeto:number = 0
         let tempoHojeP:number = 0;
         const dataFormatada = new Date().toLocaleDateString('pt-BR')
@@ -69,17 +82,18 @@ export const listar = async (req: Request, res: Response) => {
             }
           })
           if(projeto.nome){
-            projetoTempo.push({ nome: projeto.nome, tempo: tempoProjeto, tempoHoje: tempoHojeP, _id: projeto.id})
+            projetoTempo.push({ nome: projeto.nome, tempo: tempoProjeto, tempoHoje: tempoHojeP, _id: projeto._id})
           }
           tempoProjeto = 0
           tempoHojeP = 0
         })
 
-        if (projetos.length === 0) {
-            return res.status(404).json({ erro: 'Nenhum projeto encontrado para o userId especificado.' });
+        const dto = {
+          projetoTempo: projetoTempo,
+          projetos: projetos
         }
 
-        res.json(projetoTempo);
+        res.json(dto);
         } catch (error) {
         res.status(500).json({ erro: 'Ocorreu um erro ao listar os documentos' });
         }
