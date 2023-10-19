@@ -33,7 +33,9 @@ export const editar = async (req: Request, res: Response) => {
 
     const projetoTempo = await Projeto.findById(id)
     
-    projetoTempo?.tempoGasto.push(req.body.tempoGasto)
+      if (req.body.tempoGasto) {
+        projetoTempo?.tempoGasto.push(req.body.tempoGasto);
+      }
 
     const projeto = {
       nome: req.body.nome,
