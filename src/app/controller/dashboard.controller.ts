@@ -1,6 +1,5 @@
-import { Request, Response, NextFunction } from "express"; 
+import { Request, Response } from "express"; 
 import  { Projeto }  from "../models/Projeto";
-import { ProjetoDash } from "../interface/Projeto.interface";
 
 export const dashboard = async (req: Request, res: Response) => {
     try {

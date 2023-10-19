@@ -14,25 +14,25 @@ export const register = async (req: Request, res: Response) => {
 
     //validations
     if (!name) {
-      return res.status(422).json({ msg: "O nome é obrigatório!" });
+      return res.status(422).json({ msg: "O nome é obrigatório!", type:3 });
     }
   
     if (!email) {
-      return res.status(422).json({ msg: "O email é obrigatório!" });
+      return res.status(422).json({ msg: "O E-mail é obrigatório!", type:4 });
     }
   
     if (!password) {
-      return res.status(422).json({ msg: "A senha é obrigatório!" });
+      return res.status(422).json({ msg: "A senha é obrigatório!", type:5 });
     }
   
     if (password !== confirmPassword) {
-      return res.status(422).json({ msg: "As senhas não conferem!" });
+      return res.status(422).json({ msg: "As senhas não conferem!", type:6 });
     }
   
     const userExists = await User.findOne({ email: email });
   
     if (userExists) {
-      return res.status(422).json({ msg: "E-mail já cadastrado!" });
+      return res.status(422).json({ msg: "E-mail já cadastrado!", type:4 });
     }
   
     // create passowrd
@@ -60,24 +60,24 @@ export const login = async (req: Request, res: Response) =>{
     const { email, password } = req.body;
 
     if (!email) {
-      return res.status(422).json({ msg: "O email é obrigatório!" });
+      return res.status(422).json({ msg: "O E-mail é obrigatório!", type:1 });
     }
   
     if (!password) {
-      return res.status(422).json({ msg: "A senha é obrigatório!" });
+      return res.status(422).json({ msg: "A senha é obrigatório!", type:2 });
     }
   
     const user = await User.findOne({ email: email });
   
     if (!user) {
-      return res.status(404).json({ msg: "Usuário não existe!" });
+      return res.status(404).json({ msg: "E-mail não existe!", type:1 });
     }
   
     // check passwrod
     const checkPassword =  await bcrypt.compare(password, user.password!);
 
     if (!checkPassword) {
-      return res.status(422).json({ msg: "Senha inválida!" });
+      return res.status(422).json({ msg: "Senha inválida!", type:2 });
     }
   
     try {
