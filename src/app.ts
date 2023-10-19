@@ -3,10 +3,10 @@ import express from "express";
 import mongoose from "mongoose";
 import cors from 'cors';
 import { Response } from "express";
-import { checkToken } from "./src/app/service/user.service";
-import { login, privada, publica, register } from "./src/app/controller/user.controller";
-import {adicionar, listar, excluir, editar} from "./src/app/controller/projeto.controller"
-import { dashboard } from "./src/app/controller/dashboard.controller";
+import { checkToken } from "./app/service/user.service";
+import { login, privada, publica, register } from "./app/controller/user.controller";
+import {adicionar, listar, excluir, editar} from "./app/controller/projeto.controller"
+import { dashboard } from "./app/controller/dashboard.controller";
 
 const app = express();
 const dbUser = process.env.DB_USER || '';
