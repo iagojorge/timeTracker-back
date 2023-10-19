@@ -1,0 +1,6 @@
+{
+    "version": 2,
+    "builds": [
+      { "src": "app.ts", "use": "@now/node" }
+    ]
+  }
