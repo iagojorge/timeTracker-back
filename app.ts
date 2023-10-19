@@ -12,7 +12,7 @@ const app = express();
 const dbUser = process.env.DB_USER || '';
 const dbPass = process.env.DB_PASS || '';
 
-app.use(cors({ origin: 'http://localhost:8080' }));
+app.use(cors({ origin: 'https://iago-alura-tracker.vercel.app' }));
 app.use(express.json());
 
 app.get("/", publica)
