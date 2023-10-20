@@ -8,9 +8,16 @@ class ProjectService {
     return project.save();
   };
 
+  findByIdAndDelete = async (id: any) => {
+    try {
+      return Project.findByIdAndDelete(id);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   editProject = async (req: Request, res: Response) => {};
   listProjects = async (req: Request, res: Response) => {};
-  deleteProject = async (req: Request, res: Response) => {};
 }
 
 export default ProjectService;

@@ -29,7 +29,7 @@ class ProjectApi extends BaseApi {
 
       await this.projectService.addProject(projectRequest);
 
-      return this.sendCreated(res, {
+      this.sendCreated(res, {
         type: ResponseType.SUCCESS,
         message: SuccessMessage.PROJECT_CREATED_SUCCESSFULLY,
       });
@@ -38,6 +38,19 @@ class ProjectApi extends BaseApi {
         type: ResponseType.ERROR,
         message: ErrorMessage.INTERNAL_SERVER_ERROR,
       });
+    }
+  };
+
+  deleteProject = async (req: Request, res: Response) => {
+    try {
+      const idProject = req.params.id;
+      await this.projectService.findByIdAndDelete(idProject);
+      this.sendCreated(res, {
+        type: ResponseType.SUCCESS,
+        message: SuccessMessage.PROJECT_DELETED_SUCCESSFULLY,
+      });
+    } catch (error) {
+      return this.sendNotFound(res, ErrorMessage.PROJECT_NOT_FOUND);
     }
   };
 }
