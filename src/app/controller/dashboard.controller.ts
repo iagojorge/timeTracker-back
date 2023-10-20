@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
+import { DashboardResponse } from "../dto/dashboard.response";
 import BaseApi from "../service/base.api";
 import DashboardService from "../service/dashboard.service";
-import { DashboardResponse } from "./dto/dashboard.response";
 
 class DashboardController extends BaseApi {
   private dashboardService: DashboardService;

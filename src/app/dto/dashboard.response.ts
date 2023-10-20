@@ -1,4 +1,4 @@
-import { DayTime } from "../../interface/day.time";
+import { DayTime } from "../interface/day.time";
 
 export interface DashboardResponse {
   weekTimeArray: DayTime[];
