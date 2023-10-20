@@ -16,6 +16,22 @@ class ProjectService {
     }
   };
 
+  findById = async (id: any) => {
+    try {
+      return Project.findById(id);
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  findByIdAndUpdate = async (id: any, project: any) => {
+    try {
+      return Project.findByIdAndUpdate(id, project);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   editProject = async (req: Request, res: Response) => {};
   listProjects = async (req: Request, res: Response) => {};
 }

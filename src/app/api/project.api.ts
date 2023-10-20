@@ -41,11 +41,42 @@ class ProjectApi extends BaseApi {
     }
   };
 
+  editProject = async (req: Request, res: Response) => {
+    try {
+      const idProject = req.params.id;
+      const projectTime = await this.projectService.findById(idProject);
+
+      if (req.body.timeSpent) {
+        projectTime?.timeSpent.push(req.body.timeSpent);
+      }
+
+      const project = {
+        nome: req.body.name,
+        tempoGasto: projectTime?.timeSpent,
+      };
+
+      const updatedProject = await this.projectService.findByIdAndUpdate(
+        idProject,
+        project
+      );
+
+      if (!updatedProject) {
+        return this.sendNotFound(res, ErrorMessage.PROJECT_NOT_FOUND);
+      }
+      return this.sendCreated(res, updatedProject);
+    } catch (error) {
+      return this.sendInternalServerError(res, {
+        type: ResponseType.ERROR,
+        message: ErrorMessage.INTERNAL_SERVER_ERROR,
+      });
+    }
+  };
+
   deleteProject = async (req: Request, res: Response) => {
     try {
       const idProject = req.params.id;
       await this.projectService.findByIdAndDelete(idProject);
-      
+
       this.sendCreated(res, {
         type: ResponseType.SUCCESS,
         message: SuccessMessage.PROJECT_DELETED_SUCCESSFULLY,
