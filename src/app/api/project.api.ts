@@ -45,6 +45,7 @@ class ProjectApi extends BaseApi {
     try {
       const idProject = req.params.id;
       await this.projectService.findByIdAndDelete(idProject);
+      
       this.sendCreated(res, {
         type: ResponseType.SUCCESS,
         message: SuccessMessage.PROJECT_DELETED_SUCCESSFULLY,
