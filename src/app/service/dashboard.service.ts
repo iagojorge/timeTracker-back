@@ -1,4 +1,4 @@
-import { DayTime } from "../interface/day.time";
+import { DayTimeResponse } from "../../shared/dto/response/dashboard/day.time.response";
 import { IProject, Project, TimeSpent } from "../models/Project";
 
 class DashboardService {
@@ -50,7 +50,7 @@ class DashboardService {
   };
 
   getWeekTimeArray = async (userId: string, todayDate: Date) => {
-    const weekTimeArray: DayTime[] = [];
+    const weekTimeArray: DayTimeResponse[] = [];
 
     for (const day of Object.values(DayOfWeek)) {
       todayDate.setDate(todayDate.getDate() - 1);
@@ -64,7 +64,7 @@ class DashboardService {
       weekTimeArray.push({
         name: DayOfWeek[todayDate.getDay()],
         time: time,
-      } as DayTime);
+      } as DayTimeResponse);
     }
 
     return weekTimeArray;

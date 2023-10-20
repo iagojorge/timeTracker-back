@@ -1,7 +1,7 @@
-import { DayTime } from "../interface/day.time";
+import { DayTimeResponse } from "./day.time.response";
 
 export interface DashboardResponse {
-  weekTimeArray: DayTime[];
+  weekTimeArray: DayTimeResponse[];
   weekTime: string;
   monthTime: string;
   todayTime: string;
