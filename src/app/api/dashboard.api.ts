@@ -3,7 +3,7 @@ import { DashboardResponse } from "../../shared/dto/response/dashboard/dashboard
 import BaseApi from "../service/base.api";
 import DashboardService from "../service/dashboard.service";
 
-class DashboardController extends BaseApi {
+class DashboardApi extends BaseApi {
   private dashboardService: DashboardService;
 
   constructor() {
@@ -42,4 +42,4 @@ class DashboardController extends BaseApi {
   };
 }
 
-export default DashboardController;
+export default DashboardApi;

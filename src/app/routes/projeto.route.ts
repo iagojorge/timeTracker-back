@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { adicionar, editar, excluir, listar } from "../controller/projeto.controller";
+import { adicionar, editar, excluir, listar } from "../api/projeto.controller";
 
 const projetoRouter = Router();
 

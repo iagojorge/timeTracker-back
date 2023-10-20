@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { privada, publica } from "../controller/user.controller";
+import { privada, publica } from "../api/user.controller";
 import { checkToken } from "../service/user.service";
 
 const userRouter = Router();
