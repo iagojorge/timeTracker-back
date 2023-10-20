@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { Filtro } from "../../shared/filters/project.filter";
-import { ProjetoDash } from "../../shared/types/project.dashboard";
-import { Project } from "../models/Project";
+import { ProjectFilter } from "../../shared/filters/project.filter";
+import { ProjectDashboard } from "../../shared/types/project.dashboard";
+import { Project, TimeSpent } from "../models/Project";
 
 export const adicionar = async (req: Request, res: Response) => {
   const { nome, userId } = req.body;
@@ -55,7 +55,7 @@ export const listar = async (req: Request, res: Response) => {
     const userId = req.query.userId;
     const filtro = req.query.filtro;
 
-    let projetos: Filtro[] = [];
+    let projetos: ProjectFilter[] = [];
 
     if (!userId) {
       return res
@@ -77,23 +77,23 @@ export const listar = async (req: Request, res: Response) => {
     let tempoProjeto: number = 0;
     let tempoHojeP: number = 0;
     const dataFormatada = new Date().toLocaleDateString("pt-BR");
-    const projetoTempo: ProjetoDash[] = [];
+    const projetoTempo: ProjectDashboard[] = [];
 
     projetos.forEach((projeto) => {
-      projeto.tempoGasto.forEach((tempoGasto) => {
-        if (tempoGasto.tempo) {
-          if (tempoGasto.data == dataFormatada) {
-            tempoHojeP += tempoGasto.tempo;
+      projeto.timeSpent.forEach((tempoGasto: TimeSpent) => {
+        if (tempoGasto.time) {
+          if (tempoGasto.date == dataFormatada) {
+            tempoHojeP += tempoGasto.time;
           }
-          tempoProjeto += tempoGasto.tempo;
+          tempoProjeto += tempoGasto.time;
         }
       });
-      if (projeto.nome) {
+      if (projeto.name) {
         projetoTempo.push({
-          nome: projeto.nome,
-          tempo: tempoProjeto,
-          tempoHoje: tempoHojeP,
-          _id: projeto._id,
+          name: projeto.name,
+          totalDuration: tempoProjeto,
+          durationToday: tempoHojeP,
+          id: projeto.id,
         });
       }
       tempoProjeto = 0;
@@ -126,7 +126,5 @@ export const excluir = async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ deletedProjeto, msg: "Projeto deletado com sucesso!" });
-  } catch (error) {
-
-  }
+  } catch (error) {}
 };

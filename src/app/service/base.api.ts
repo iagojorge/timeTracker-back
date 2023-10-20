@@ -1,20 +1,28 @@
 import { Response } from "express";
+import { ErrorResponse } from "../dto/response/error.response";
 
 class BaseApi {
-  protected sendResponse(
+  protected sendErrorResponse(
     res: Response,
     statusCode: number,
-    errorMessage: string
+    errorResponse: ErrorResponse
   ) {
-    return res.status(statusCode).json({ error: errorMessage });
+    return res.status(statusCode).json(errorResponse);
   }
 
-  protected sendBadRequest(res: Response, errorMessage: string) {
-    return this.sendResponse(res, 400, errorMessage);
+  protected sendBadRequest(res: Response, errorResponse: ErrorResponse) {
+    return this.sendErrorResponse(res, 400, errorResponse);
   }
 
-  protected sendInternalServerError(res: Response, errorMessage: string) {
-    return this.sendResponse(res, 500, errorMessage);
+  protected sendNotFound(res: Response, errorResponse: ErrorResponse) {
+    return this.sendErrorResponse(res, 404, errorResponse);
+  }
+
+  protected sendInternalServerError(
+    res: Response,
+    errorResponse: ErrorResponse
+  ) {
+    return this.sendErrorResponse(res, 500, errorResponse);
   }
 }
 

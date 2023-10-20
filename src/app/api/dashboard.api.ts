@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { ResponseType } from "../../shared/enums/response.type";
 import { DashboardResponse } from "../dto/response/dashboard.response";
 import BaseApi from "../service/base.api";
 import DashboardService from "../service/dashboard.service";
@@ -14,9 +15,11 @@ class DashboardApi extends BaseApi {
   getDashboard = async (req: Request, res: Response) => {
     try {
       const userId = req.query.userId as string;
-
       if (!userId) {
-        return this.sendBadRequest(res, ErrorMessage.MISSING_USER_ID);
+        return this.sendBadRequest(res, {
+          type: ResponseType.ERROR,
+          message: ErrorMessage.MISSING_USER_ID,
+        });
       }
 
       const { formattedDate, todayDate } =
@@ -37,7 +40,10 @@ class DashboardApi extends BaseApi {
 
       res.json(response);
     } catch (error) {
-      this.sendInternalServerError(res, ErrorMessage.INTERNAL_SERVER_ERROR);
+      this.sendInternalServerError(res, {
+        type: ResponseType.ERROR,
+        message: ErrorMessage.INTERNAL_SERVER_ERROR,
+      });
     }
   };
 }
