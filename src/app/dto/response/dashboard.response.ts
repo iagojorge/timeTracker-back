@@ -1,4 +1,4 @@
-import { DayTime } from "../../../../shared/types/day.time";
+import { DayTime } from "../../../shared/types/day.time";
 
 export interface DayTimeResponse extends DayTime {}
 

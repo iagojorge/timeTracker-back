@@ -1,5 +1,5 @@
 import { TimeSpent } from "../../shared/types/time.spent";
-import { DayTimeResponse } from "../api/dto/response/dashboard.response";
+import { DayTimeResponse } from "../dto/response/dashboard.response";
 import { IProject, Project } from "../models/Project";
 
 class DashboardService {
