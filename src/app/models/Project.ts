@@ -1,17 +1,17 @@
-import mongoose, { Document, Schema } from "mongoose";
+import mongoose, { Document, Model, Schema } from "mongoose";
 
 interface TimeSpent {
   date: string;
   time: number;
 }
 
-interface ProjectDocument extends Document {
+interface IProject extends Document {
   name: string;
   timeSpent: TimeSpent[];
   userId: string;
 }
 
-const projectSchema = new Schema<ProjectDocument>(
+const projectSchema = new Schema<IProject>(
   {
     name: String,
     timeSpent: [
@@ -27,7 +27,9 @@ const projectSchema = new Schema<ProjectDocument>(
   }
 );
 
-const Project = mongoose.model<ProjectDocument>("Project", projectSchema);
+const Project: Model<IProject> = mongoose.model<IProject>(
+  "Project",
+  projectSchema
+);
 
-export { Project, ProjectDocument, TimeSpent };
-
+export { IProject, Project, TimeSpent };
