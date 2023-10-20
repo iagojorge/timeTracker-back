@@ -1,4 +1,7 @@
 import { Request, Response } from "express";
+import Joi from "joi";
+import { ResponseType } from "../../shared/enums/response.type";
+import { ProjectRequest } from "../dto/request/project.request";
 import BaseApi from "../service/base.api";
 import ProjectService from "../service/project.service";
 
@@ -10,24 +13,33 @@ class ProjectApi extends BaseApi {
     this.projectService = new ProjectService();
   }
 
+  private projectSchema = Joi.object({
+    name: Joi.string().required(),
+    userId: Joi.string().required(),
+  });
+
   addProject = async (req: Request, res: Response) => {
-    // try {
-    //   const projectRequest: ProjectRequest = req.body as ProjectRequest;
-    //   const project = await this.projectService.addProject(projectRequest);
-    //   const exemploApiResponse: ApiResponse = {
-    //     type: ResponseType.SUCCESS, // Substitua por um valor adequado
-    //     message: "Project created successfully!",
-    //     data: project,
-    //   };
-    //   this.sendCreated(res, {
-    //     type: ResponseType.SUCCESS, // Substitua por um valor adequado
-    //     message: "Project created successfully!",
-    //   });
-    // } catch (error) {
-    //   this.sendInternalServerError(res, {
-    //     type: ResponseType.ERROR, // Substitua por um valor adequado
-    //     message: "Server error, please try again later!",
-    //   });
-    // }
+    try {
+      const projectRequest: ProjectRequest = req.body as ProjectRequest;
+      const { error } = this.projectSchema.validate(projectRequest);
+
+      if (error) {
+        return this.sendBadRequest(res, error);
+      }
+
+      await this.projectService.addProject(projectRequest);
+
+      return this.sendCreated(res, {
+        type: ResponseType.SUCCESS,
+        message: SuccessMessage.PROJECT_CREATED_SUCCESSFULLY,
+      });
+    } catch (error) {
+      return this.sendInternalServerError(res, {
+        type: ResponseType.ERROR,
+        message: ErrorMessage.INTERNAL_SERVER_ERROR,
+      });
+    }
   };
 }
+
+export default ProjectApi;
