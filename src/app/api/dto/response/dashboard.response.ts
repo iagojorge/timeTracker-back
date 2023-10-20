@@ -1,4 +1,6 @@
-import { DayTimeResponse } from "./day.time.response";
+import { DayTime } from "../../../../shared/types/day.time";
+
+export interface DayTimeResponse extends DayTime {}
 
 export interface DashboardResponse {
   weekTimeArray: DayTimeResponse[];

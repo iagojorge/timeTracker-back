@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { DashboardResponse } from "./dto/response/dashboard/dashboard.response";
+import { DashboardResponse } from "./dto/response/dashboard.response";
 import BaseApi from "../service/base.api";
 import DashboardService from "../service/dashboard.service";
 
