@@ -20,3 +20,4 @@ const userSchema = new Schema<IUser>(
 const User: Model<IUser> = mongoose.model<IUser>("User", userSchema);
 
 export { User };
+

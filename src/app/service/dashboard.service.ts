@@ -1,5 +1,6 @@
-import { DayTimeResponse } from "../../shared/dto/response/dashboard/day.time.response";
-import { IProject, Project, TimeSpent } from "../models/Project";
+import { DayTimeResponse } from "../api/dto/response/dashboard/day.time.response";
+import { TimeSpent } from "../../shared/types/time.spent";
+import { IProject, Project } from "../models/Project";
 
 class DashboardService {
   getDashboardData = async (

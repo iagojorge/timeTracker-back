@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { ProjetoDash } from "../interface/Projeto.interface";
-import { Filtro } from "../interface/Filtro.interface";
+import { Filtro } from "../../shared/filters/project.filter";
+import { ProjetoDash } from "../../shared/types/project.dashboard";
 import { Project } from "../models/Project";
 
 export const adicionar = async (req: Request, res: Response) => {
@@ -126,5 +126,7 @@ export const excluir = async (req: Request, res: Response) => {
     res
       .status(200)
       .json({ deletedProjeto, msg: "Projeto deletado com sucesso!" });
-  } catch (error) {}
+  } catch (error) {
+
+  }
 };

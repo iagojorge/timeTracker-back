@@ -1,9 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-
-interface TimeSpent {
-  date: string;
-  time: number;
-}
+import { TimeSpent } from "../../shared/types/time.spent";
 
 interface IProject extends Document {
   name: string;
