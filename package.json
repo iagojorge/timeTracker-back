@@ -7,7 +7,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsup src",
-    "start": "nodemon dist/app.cjs"
+    "start": "nodemon dist/app.js"
   },
   "keywords": [],
   "author": "",
