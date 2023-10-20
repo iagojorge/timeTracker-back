@@ -1,1 +1,2 @@
-class ProjectService {}
+class ProjectService {
+}
