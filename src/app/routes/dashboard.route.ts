@@ -1,9 +1,9 @@
 import { Router } from "express";
-import DashboardController from "../api/dashboard.controller";
+import DashboardApi from "../api/dashboard.api";
 
 const dashboardRouter = Router();
-const dashboardController = new DashboardController();
+const dashboardApi = new DashboardApi();
 
-dashboardRouter.get("/list", dashboardController.getDashboard);
+dashboardRouter.get("/list", dashboardApi.getDashboard);
 
 export default dashboardRouter;
