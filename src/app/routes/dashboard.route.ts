@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { dashboard } from "../controller/dashboard.controller";
+import DashboardController from "../controller/dashboard.controller";
 
 const dashboardRouter = Router();
+const dashboardController = new DashboardController();
 
-dashboardRouter.get("/list", dashboard);
+dashboardRouter.get("/list", dashboardController.getDashboard);
 
 export default dashboardRouter;
