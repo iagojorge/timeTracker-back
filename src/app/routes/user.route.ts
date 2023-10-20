@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { login, register } from "../controller/user.controller";
+import { privada, publica } from "../controller/user.controller";
+import { checkToken } from "../service/user.service";
 
-const authRouter = Router();
+const userRouter = Router();
 
-authRouter.post("/register", register);
-authRouter.post("/login", login);
+userRouter.get("/", publica);
+userRouter.get("/:id", checkToken, privada);
 
-export default authRouter;
+export default userRouter;

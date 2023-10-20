@@ -1,7 +1,8 @@
 import { Router } from "express";
-import { default as authRouter, default as userRouter } from "./auth.route";
+import authRouter from "./auth.route";
 import dashboardRouter from "./dashboard.route";
 import projetoRouter from "./projeto.route";
+import userRouter from "./user.route";
 
 const router = Router();
 
