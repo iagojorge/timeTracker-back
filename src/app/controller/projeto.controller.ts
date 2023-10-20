@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import  { Projeto }  from "../models/Projeto";
 import { ProjetoDash } from "../interface/Projeto.interface";
 import { Filtro } from "../interface/Filtro.interface";
+import { Project } from "../models/Project";
 
 
 export const adicionar = async (req: Request, res: Response) => {
@@ -13,7 +13,7 @@ export const adicionar = async (req: Request, res: Response) => {
     }
 
    // create projeto
-   const projeto = new Projeto({
+   const projeto = new Project({
     nome, 
     userId
   });
@@ -31,7 +31,7 @@ export const adicionar = async (req: Request, res: Response) => {
 export const editar = async (req: Request, res: Response) => {
     const id = req.params.id
 
-    const projetoTempo = await Projeto.findById(id)
+    const projetoTempo = await Project.findById(id)
     
       if (req.body.tempoGasto) {
         projetoTempo?.tempoGasto.push(req.body.tempoGasto);
@@ -42,7 +42,7 @@ export const editar = async (req: Request, res: Response) => {
       tempoGasto: projetoTempo?.tempoGasto
     }
   
-    const updatedProjeto = await Projeto.findByIdAndUpdate(id, projeto)
+    const updatedProjeto = await Project.findByIdAndUpdate(id, projeto)
     
     if(!updatedProjeto){
       return res.status(404).json({msg: "Projeto não encontrado!"})
@@ -64,9 +64,9 @@ export const listar = async (req: Request, res: Response) => {
         
         if(filtro){
           const filtroString = typeof filtro === 'string' ? filtro : filtro.toString();
-           projetos = await Projeto.find({ userId: userId, nome: { $regex: new RegExp(filtroString, 'i') } })
+           projetos = await Project.find({ userId: userId, nome: { $regex: new RegExp(filtroString, 'i') } })
         }else{
-           projetos = await Projeto.find({ userId: userId})
+           projetos = await Project.find({ userId: userId})
         }
       
         let tempoProjeto:number = 0
@@ -105,7 +105,7 @@ export const excluir = async (req: Request, res: Response) => {
     try {
         const id = req.params.id
     
-        const projeto = await Projeto.findById(id)
+        const projeto = await Project.findById(id)
     
         if(!projeto){
           return res.status(404).json({msg: "Projeto não encontrado!"})
