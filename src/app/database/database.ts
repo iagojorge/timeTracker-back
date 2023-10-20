@@ -1,8 +1,8 @@
 import { Response } from "express";
 import mongoose from "mongoose";
 
-const dbUser = process.env.DB_USER || '';
-const dbPass = process.env.DB_PASS || '';
+const dbUser = process.env.DB_USER;
+const dbPass = process.env.DB_PASS;
 
 function connectDatabase() {
   mongoose
