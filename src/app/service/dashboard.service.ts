@@ -1,5 +1,5 @@
 import { DayTime } from "../interface/day.time";
-import { Project, ProjectDocument, TimeSpent } from "../models/Project";
+import { IProject, Project, TimeSpent } from "../models/Project";
 
 class DashboardService {
   getDashboardData = async (
@@ -22,7 +22,7 @@ class DashboardService {
 
   private _calculateTotalTime = (projects: any, date: any) => {
     let totalTime: number = 0;
-    projects.forEach((project: ProjectDocument) => {
+    projects.forEach((project: IProject) => {
       project.timeSpent.forEach((timeSpent: TimeSpent) => {
         if (timeSpent.date === date && timeSpent.time) {
           totalTime += timeSpent.time;
