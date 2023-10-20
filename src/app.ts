@@ -9,6 +9,6 @@ const app = express();
 
 connectDatabase();
 app.listen(3000);
-app.use(cors());
+app.use(cors({ origin: 'https://iago-tracker.vercel.app' }));
 app.use(express.json());
 app.use(router);
